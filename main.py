@@ -2,7 +2,8 @@ documents = [
     {"type": "passport", "number": "2207 876234", "name": "Василий Гупкин"},
     {"type": "invoice", "number": "11-2", "name": "Геннадий Покемонов"},
     {"type": "insurance", "number": "10006", "name": "Аристарх Павлов"},
-    {"type": "insurance", "number": "10006", "name": "Аристашка Павлов"}
+    {"type": "insurance", "number": "10006", "name": "Аристашка Павлов"},
+    {"type": "insurance", "number": "10007"}
       ]
 
 directories = {
@@ -19,7 +20,7 @@ def add_shelf(shelf_name):
         print('Полка добавлена')
 
 def get_owner_name_by_doc_number(number: str):
-    res = [document['name'] for document in documents if document['number'] == number]
+    res = [document.get('name') for document in documents if document.get('number') == number]
     if len(res) == 0:
         print(f'Документа с номером {number} не найден')
     elif len(res) == 1:
@@ -41,8 +42,10 @@ def get_shelf_number_by_doc_number(doc_number):
 
 def print_list():
     print('Список всех документов:')
-    docs = [doc.values() for doc in documents]
-    for doc_type, doc_number, doc_owner in docs:
+    for doc in documents:
+        doc_type = doc.get("type")
+        doc_number = doc.get("number")
+        doc_owner = doc.get("name")
         print(f'{doc_type} "{doc_number}" "{doc_owner}"')
 
 def add_doc_to_shelf():
@@ -84,6 +87,13 @@ def move_to_shelf(doc_number, new_shelf):
     else:
         print('Документа нет на полках. Сначала добавьте документ командой "a".')
 
+def print_all_doc_name():
+    for doc in documents:
+        try:
+            print(f'{doc["name"]} - владелец документа {doc.get("number")}')
+        except KeyError:
+            print(f'У документа {doc.get("number")} нет владельца')
+
 if __name__ == '__main__':
     print('''
 p  – people    – команда, которая спросит номер документа и выведет имя человека, которому он принадлежит;
@@ -94,6 +104,7 @@ a  – add       – команда, которая добавит новый д
 d  – delete    – команда, которая спросит номер документа и удалит его из каталога и из перечня полок;
 m  – move      – команда, которая спросит номер документа и целевую полку и переместит его с текущей полки на целевую;
 as – add shelf – команда, которая спросит номер новой полки и добавит ее в перечень;
+pa – print all – команда, которая выведит список всех владельцов документов;
 q  – quite     – Выход.
              ''')
     while True:
@@ -114,5 +125,7 @@ q  – quite     – Выход.
             documents = delete_by_doc_number_and_return_new_list(input('Введите номер документа: '))
         elif comand == 'm':
             move_to_shelf(input('ведите номер документа: '), input('На какую полку переместить? '))
+        elif comand == 'pa':
+            print_all_doc_name()
         else:
             print('Такой команды нет. Попробуйте еще.')
